@@ -1,10 +1,10 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = "luaexpat"
-version = "1.1.0-4"
+version = "1.1.0-5"
 -- LuaDist source
 source = {
-  tag = "1.1.0-4",
+  tag = "1.1.0-5",
   url = "git://github.com/LuaDist-testing/luaexpat.git"
 }
 -- Original source
@@ -39,4 +39,5 @@ build = {
     },
     ["lxp.lom"] = "src/lxp/lom.lua"
    },
+   copy_directories = { "doc", "tests" }
 }
