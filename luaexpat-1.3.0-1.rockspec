@@ -1,15 +1,15 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = "luaexpat"
-version = "1.2.0-1"
+version = "1.3.0-1"
 -- LuaDist source
 source = {
-  tag = "1.2.0-1",
+  tag = "1.3.0-1",
   url = "git://github.com/LuaDist-testing/luaexpat.git"
 }
 -- Original source
 -- source = {
---    url = "http://matthewwild.co.uk/uploads/luaexpat-1.2.0.tar.gz"
+--    url = "http://matthewwild.co.uk/projects/luaexpat/luaexpat-1.3.0.tar.gz"
 -- }
 description = {
    summary = "XML Expat parsing",
