@@ -1,10 +1,10 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = "luaexpat"
-version = "1.1.0-3"
+version = "1.1.0-4"
 -- LuaDist source
 source = {
-  tag = "1.1.0-3",
+  tag = "1.1.0-4",
   url = "git://github.com/LuaDist-testing/luaexpat.git"
 }
 -- Original source
@@ -29,16 +29,14 @@ external_dependencies = {
    }
 }
 build = {
-   type = "make",
-   variables = {
-      LUA_VERSION_NUM="501",
+   type = "builtin",
+   modules = {
+    lxp = { 
+      sources = { "src/lxplib.c" },
+      libraries = { "expat" },
+      incdirs = { "$(EXPAT_INCDIR)", "src/" },
+      libdirs = { "$(EXPAT_LIBDIR)" }
+    },
+    ["lxp.lom"] = "src/lxp/lom.lua"
    },
-   build_variables = {
-      LIB_OPTION = "$(LIBFLAG) -L$(EXPAT_LIBDIR)",
-      CFLAGS = "$(CFLAGS) -I$(LUA_INCDIR) -I$(EXPAT_INCDIR)",
-   },
-   install_variables = {
-      LUA_LIBDIR = "$(LIBDIR)",
-      LUA_DIR = "$(LUADIR)"
-   }
 }
