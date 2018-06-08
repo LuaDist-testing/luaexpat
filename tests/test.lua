@@ -228,7 +228,18 @@ assert(x[1] == "e" and x[3] == "a/namespace?a")
 x = X[6]
 assert(x[1] == "en" and x[3] == "space" and table.getn(x) == 3)
 
+----------------------------
+print("testing doctype declarations")
 
+callbacks = {
+  StartDoctypeDecl = getargs
+ }
+p = lxp.new(callbacks)
+assert(p:parse([[<!DOCTYPE root PUBLIC "foo" "hello-world">]]))
+assert(p:parse[[<root/>]])
+p:close()
+assert(X[2] == "root" and X[3] == "hello-world" and X[4] == "foo" and
+       X[5] == false)
 
 -- Error reporting
 p = lxp.new{}
@@ -279,6 +290,24 @@ p = lxp.new{}
 assert(p:parse[[<to>]])
 local status, err = pcall(p.close, p)
 assert(not status and string.find(err, "error closing parser"))
+
+-- closing unfinished document
+print("testing parser:stop()");
+local stopped;
+p = lxp.new{
+	StartElement = function (parser, name, attr)
+		if name == "stop" then
+			parser:stop()
+			stopped = true
+		else
+			stopped = false
+		end
+	end
+}
+local ok, err = p:parse[[<root><parseme>Hello</parseme><stop>here</stop><notparsed/></root>]];
+assert(not ok)
+assert(err == "parsing aborted")
+assert(stopped == true, "parser not stopped")
 
 
 -- test for GC

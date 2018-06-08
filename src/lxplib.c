@@ -311,6 +311,19 @@ static void f_UnparsedEntityDecl (void *ud, const char *entityName,
   docall(xpu, 5, 0);
 }
 
+static void f_StartDoctypeDecl (void *ud, const XML_Char *doctypeName,
+                                          const XML_Char *sysid,
+                                          const XML_Char *pubid,
+                                          int has_internal_subset) {
+  lxp_userdata *xpu = (lxp_userdata *)ud;
+  if (getHandle(xpu, StartDoctypeDeclKey) == 0) return;  /* no handle */
+  lua_pushstring(xpu->L, doctypeName);
+  lua_pushstring(xpu->L, sysid);
+  lua_pushstring(xpu->L, pubid);
+  lua_pushboolean(xpu->L, has_internal_subset);
+  docall(xpu, 4, 0);
+}
+
 /* }====================================================== */
 
 
@@ -331,7 +344,7 @@ static void checkcallbacks (lua_State *L) {
     "Default", "DefaultExpand", "StartElement", "EndElement",
     "ExternalEntityRef", "StartNamespaceDecl", "EndNamespaceDecl",
     "NotationDecl", "NotStandalone", "ProcessingInstruction",
-    "UnparsedEntityDecl", NULL};
+    "UnparsedEntityDecl", "StartDoctypeDecl", NULL};
   if (hasfield(L, "_nonstrict")) return;
   lua_pushnil(L);
   while (lua_next(L, 1)) {
@@ -384,6 +397,8 @@ static int lxp_make_parser (lua_State *L) {
     XML_SetProcessingInstructionHandler(p, f_ProcessingInstruction);
   if (hasfield(L, UnparsedEntityDeclKey))
     XML_SetUnparsedEntityDeclHandler(p, f_UnparsedEntityDecl);
+  if (hasfield(L, StartDoctypeDeclKey))
+    XML_SetStartDoctypeDeclHandler(p, f_StartDoctypeDecl);
   return 1;
 }
 
@@ -496,6 +511,11 @@ static int lxp_setencoding (lua_State *L) {
   return 0;
 }
 
+static int lxp_stop (lua_State *L) {
+  lxp_userdata *xpu = checkparser(L, 1);
+  lua_pushboolean(L, XML_StopParser(xpu->parser, XML_FALSE) == XML_STATUS_OK);
+  return 1;
+}
 
 static const struct luaL_reg lxp_meths[] = {
   {"parse", lxp_parse},
@@ -506,6 +526,7 @@ static const struct luaL_reg lxp_meths[] = {
   {"getcallbacks", getcallbacks},
   {"getbase", getbase},
   {"setbase", setbase},
+  {"stop", lxp_stop},
   {NULL, NULL}
 };
 
@@ -526,7 +547,7 @@ static void set_info (lua_State *L) {
 	lua_pushliteral (L, "LuaExpat is a SAX XML parser based on the Expat library");
 	lua_settable (L, -3);
 	lua_pushliteral (L, "_VERSION");
-	lua_pushliteral (L, "LuaExpat 1.1.0");
+	lua_pushliteral (L, "LuaExpat 1.2.0");
 	lua_settable (L, -3);
 }
 
